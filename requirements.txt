@@ -1,5 +1,5 @@
-fastapi==0.141.1
-uvicorn==0.30.0
-motor==3.7.1
-pydantic==2.9.0
-certifi==2025.8.3
+fastapi
+uvicorn
+motor
+pydantic
+certifi
