@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Traitor Hunt — Coordinator</title>
+    <meta name="description" content="Coordinator scoring interface for the campus Traitor scavenger hunt game.">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ════════ View 1: QR Scanner ════════ -->
+    <div id="scanner-view" class="view active">
+        <div class="app-header">
+            <h1>🕵️ Traitor Hunt</h1>
+            <p>Scan a team's QR code to score their task</p>
+        </div>
+
+        <div class="scanner-wrapper">
+            <div id="qr-reader" style="width: 100%; height: 100%;"></div>
+        </div>
+
+        <p class="scanner-hint">Point your camera at the team's QR code</p>
+    </div>
+
+    <!-- ════════ View 2: Scoring Dashboard ════════ -->
+    <div id="scoring-view" class="view">
+        <div class="app-header">
+            <h1>🕵️ Traitor Hunt</h1>
+            <p>Score this team's task</p>
+        </div>
+
+        <div class="team-card">
+            <h2 id="team-name">—</h2>
+            <div class="team-hash" id="team-hash">—</div>
+
+            <!-- Wallets -->
+            <div class="wallets">
+                <div class="wallet-pill team-wallet">
+                    <div class="wallet-label">Team Wallet</div>
+                    <div class="wallet-value" id="teammate-wallet">0</div>
+                </div>
+                <div class="wallet-pill traitor-wallet">
+                    <div class="wallet-label">Traitor Wallet</div>
+                    <div class="wallet-value" id="traitor-wallet">0</div>
+                </div>
+            </div>
+
+            <!-- Members -->
+            <div class="members-list">
+                <h3>Members</h3>
+                <div id="members-container"></div>
+            </div>
+
+            <!-- Stall ID -->
+            <div class="stall-input-group">
+                <label for="stall-id">Stall / Task ID</label>
+                <input type="text" id="stall-id" placeholder="e.g. stall_03">
+            </div>
+
+            <!-- Points Input -->
+            <div class="points-input-group">
+                <label for="max-points">Task Max Points</label>
+                <input type="number" id="max-points" placeholder="100" min="1" max="10000" value="100">
+            </div>
+
+            <!-- Score Buttons -->
+            <div class="action-buttons">
+                <button class="btn-score btn-team-won" id="btn-team-won" onclick="submitScore('team_won')">
+                    ✅ TEAM COMPLETED TASK<br>
+                    <small style="font-weight:400; font-size:0.8rem;">100% Points</small>
+                </button>
+                <button class="btn-score btn-traitor-won" id="btn-traitor-won" onclick="submitScore('traitor_won')">
+                    🕵️ TRAITOR SABOTAGED<br>
+                    <small style="font-weight:400; font-size:0.8rem;">75% Points</small>
+                </button>
+            </div>
+
+            <button class="btn-back" onclick="resetToScanner()">← Back to Scanner</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
