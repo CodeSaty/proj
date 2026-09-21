@@ -1,89 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Traitor Hunt — Coordinator</title>
-    <meta name="description" content="Coordinator scoring interface for the campus Traitor scavenger hunt game.">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Campus Grid | Scavenger Hunt</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gta: {
+                            black: '#0f0518',
+                            dark: '#1a0a2a',
+                            border: '#3d165c',
+                            pink: '#ff00ff',
+                            cyan: '#00ffff',
+                            yellow: '#ffe600',
+                            muted: '#9a7bb3'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', 'monospace'],
+                        gta: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f0518;
+            font-family: 'Share Tech Mono', monospace;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .palm-bg {
+            background-image: 
+                radial-gradient(circle at top right, #3d165c 0%, transparent 60%),
+                linear-gradient(to bottom, #1a0a2a, #0f0518);
+        }
+
+        .glitch-effect {
+            text-shadow: 2px 2px #00ffff, -2px -2px #ff00ff;
+        }
+
+        .neon-border {
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+
+        .neon-button {
+            background: transparent;
+            color: #ffe600;
+            border: 3px solid #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5), inset 0 0 15px rgba(255, 0, 255, 0.3);
+            transition: all 0.2s ease-in-out;
+            text-shadow: 0 0 5px #ffe600;
+        }
+
+        .neon-button:hover {
+            background: #ff00ff;
+            color: #ffffff;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8), inset 0 0 20px rgba(0, 255, 255, 0.5);
+            text-shadow: none;
+        }
+
+        .card-bg {
+            background: rgba(26, 10, 42, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
 </head>
-<body>
+<body class="text-gta-muted min-h-screen flex flex-col items-center justify-center p-4 palm-bg relative">
 
-    <!-- Toast container -->
-    <div class="toast-container" id="toast-container"></div>
+    <!-- Header / Nav -->
+    <header class="w-full max-w-4xl flex justify-between items-center py-6 mb-8 border-b border-gta-cyan/30 z-10">
+        <div class="text-gta-cyan font-gta text-2xl tracking-widest uppercase">
+            [SYS_NODE::VICE]
+        </div>
+        <div class="text-gta-pink font-gta text-2xl tracking-widest">
+            // PROTOCOL: ZERO-DAY
+        </div>
+    </header>
 
-    <!-- ════════ View 1: QR Scanner ════════ -->
-    <div id="scanner-view" class="view active">
-        <div class="app-header">
-            <h1>🕵️ Traitor Hunt</h1>
-            <p>Scan a team's QR code to score their task</p>
+    <!-- Hero Section -->
+    <main class="w-full max-w-4xl flex flex-col items-center text-center space-y-12 z-10">
+        <div class="space-y-4">
+            <p class="text-gta-yellow text-xl font-gta tracking-[0.2em] transform -skew-x-6">Initiating sequence...</p>
+            <h1 class="text-6xl md:text-8xl font-gta text-white glitch-effect uppercase tracking-widest transform -skew-x-6 drop-shadow-[0_0_15px_rgba(255,0,255,0.8)]">
+                The Campus Grid
+            </h1>
+            <h2 class="text-3xl md:text-4xl font-gta text-gta-cyan tracking-widest uppercase mt-4 transform -skew-x-6 drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]">
+                Ultimate Scavenger Hunt
+            </h2>
         </div>
 
-        <div class="scanner-wrapper">
-            <div id="qr-reader" style="width: 100%; height: 100%;"></div>
-        </div>
+        <p class="max-w-2xl text-white text-lg md:text-xl leading-relaxed bg-gta-dark/50 p-4 rounded-xl border border-gta-pink/30 shadow-inner">
+            Infiltrate the campus. Solve cryptographic puzzles. Capture the nodes. Form your syndicate and dominate the grid in this high-stakes cooperative race against time.
+        </p>
 
-        <p class="scanner-hint">Point your camera at the team's QR code</p>
-    </div>
-
-    <!-- ════════ View 2: Scoring Dashboard ════════ -->
-    <div id="scoring-view" class="view">
-        <div class="app-header">
-            <h1>🕵️ Traitor Hunt</h1>
-            <p>Score this team's task</p>
-        </div>
-
-        <div class="team-card">
-            <h2 id="team-name">—</h2>
-            <div class="team-hash" id="team-hash">—</div>
-
-            <!-- Wallets -->
-            <div class="wallets">
-                <div class="wallet-pill team-wallet">
-                    <div class="wallet-label">Team Wallet</div>
-                    <div class="wallet-value" id="teammate-wallet">0</div>
+        <!-- Event Briefing Section -->
+        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left mt-8">
+            
+            <div class="card-bg neon-border p-6 rounded-xl border-gta-cyan/50 shadow-[0_0_15px_rgba(0,255,255,0.2)] transform hover:-translate-y-2 transition-transform">
+                <div class="text-gta-cyan mb-3 flex items-center border-b border-gta-cyan/30 pb-2">
+                    <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <h3 class="font-gta text-3xl uppercase tracking-wider drop-shadow-sm">8 Hidden Nodes</h3>
                 </div>
-                <div class="wallet-pill traitor-wallet">
-                    <div class="wallet-label">Traitor Wallet</div>
-                    <div class="wallet-value" id="traitor-wallet">0</div>
+                <p class="text-sm text-gta-muted font-bold">Discover 8 physical stalls concealed across the campus sectors. Decode the clues to find their exact coordinates.</p>
+            </div>
+
+            <div class="card-bg neon-border p-6 rounded-xl border-gta-pink/50 shadow-[0_0_15px_rgba(255,0,255,0.2)] transform hover:-translate-y-2 transition-transform">
+                <div class="text-gta-pink mb-3 flex items-center border-b border-gta-pink/30 pb-2">
+                    <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h3 class="font-gta text-3xl uppercase tracking-wider drop-shadow-sm">Race The Clock</h3>
                 </div>
+                <p class="text-sm text-gta-muted font-bold">Time is your enemy. Work cooperatively with your squad to complete physical and mental challenges at each node before the system locks you out.</p>
             </div>
 
-            <!-- Members -->
-            <div class="members-list">
-                <h3>Members</h3>
-                <div id="members-container"></div>
+            <div class="card-bg neon-border p-6 rounded-xl border-gta-yellow/50 shadow-[0_0_15px_rgba(255,230,0,0.2)] transform hover:-translate-y-2 transition-transform">
+                <div class="text-gta-yellow mb-3 flex items-center border-b border-gta-yellow/30 pb-2">
+                    <svg class="w-8 h-8 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    <h3 class="font-gta text-3xl uppercase tracking-wider drop-shadow-sm">Top 3 Win</h3>
+                </div>
+                <p class="text-sm text-gta-muted font-bold">Gather points by successfully executing node protocols. The top 3 syndicates with the highest scores will claim the grand prize.</p>
             </div>
 
-            <!-- Stall ID -->
-            <div class="stall-input-group">
-                <label for="stall-id">Stall / Task ID</label>
-                <input type="text" id="stall-id" placeholder="e.g. stall_03">
-            </div>
-
-            <!-- Points Input -->
-            <div class="points-input-group">
-                <label for="max-points">Task Max Points</label>
-                <input type="number" id="max-points" placeholder="100" min="1" max="10000" value="100">
-            </div>
-
-            <!-- Score Buttons -->
-            <div class="action-buttons">
-                <button class="btn-score btn-team-won" id="btn-team-won" onclick="submitScore('team_won')">
-                    ✅ TEAM COMPLETED TASK<br>
-                    <small style="font-weight:400; font-size:0.8rem;">100% Points</small>
-                </button>
-                <button class="btn-score btn-traitor-won" id="btn-traitor-won" onclick="submitScore('traitor_won')">
-                    🕵️ TRAITOR SABOTAGED<br>
-                    <small style="font-weight:400; font-size:0.8rem;">75% Points</small>
-                </button>
-            </div>
-
-            <button class="btn-back" onclick="resetToScanner()">← Back to Scanner</button>
         </div>
-    </div>
 
-    <script src="app.js"></script>
+        <!-- Call to Action -->
+        <div class="pt-12 pb-8 w-full relative">
+            <a href="register.html" class="block w-full md:w-auto md:inline-block px-12 py-5 text-4xl font-gta uppercase tracking-widest neon-button text-center transform -skew-x-6">
+                REGISTER YOUR SQUAD
+            </a>
+            <p class="mt-6 text-gta-cyan text-sm tracking-[0.2em] font-bold uppercase drop-shadow-md">
+                &gt; Secure your slot in the mainframe // Limit 4 operatives per cell
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto w-full max-w-4xl pt-8 pb-4 text-center border-t border-gta-cyan/30 text-xs text-gta-muted tracking-widest z-10">
+        PIET CYBER-DEFENSE CONSORTIUM // AUTHORIZED CLEARANCE ONLY
+    </footer>
+
 </body>
 </html>

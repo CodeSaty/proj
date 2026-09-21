@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DetCalc - Matrix Size</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        bg: '#09090b',
+                        card: '#18181b',
+                        cardborder: '#27272a',
+                        primary: '#9353d3',
+                        primaryHover: '#7828c8',
+                        text: '#f4f4f5',
+                        muted: '#a1a1aa',
+                        btnBg: '#27272a',
+                        btnHover: '#3f3f46',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0a10;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .main-container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            background-color: #0e0d15;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #eaddff, #c3a4f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Custom number input hide arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container relative">
+    
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-10 w-full">
+        <div class="text-xl font-bold tracking-tight text-white flex items-center">
+            <span class="mr-1">&lambda;</span> DetCalc
+        </div>
+        <button class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Title Section -->
+    <div class="text-center mb-10 mt-2">
+        <h1 class="text-5xl font-bold mb-4 gradient-text tracking-tight">Matrix Size</h1>
+        <p class="text-gray-400 text-[15px]">Supports symbolic elements and matrices up to 20&times;20.</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-[#15141e] border border-[#232231] rounded-[20px] p-6 sm:p-8 flex-grow relative overflow-hidden shadow-lg">
+        
+        <h2 class="text-gray-300 font-medium mb-12 text-sm sm:text-base">Matrix Order n</h2>
+
+        <!-- Order Selector Controls -->
+        <div class="flex flex-col items-center justify-center mb-12">
+            
+            <div class="flex items-center justify-center gap-6 mb-6">
+                <!-- Minus Button -->
+                <button id="btn-minus" class="w-12 h-12 rounded-full bg-[#1e1c2a] flex items-center justify-center text-gray-300 hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+
+                <!-- Value Display -->
+                <input type="number" id="order-value" value="2" min="2" max="20" class="bg-transparent text-5xl font-bold text-white text-center w-24 outline-none" readonly />
+
+                <!-- Plus Button -->
+                <button id="btn-plus" class="w-12 h-12 rounded-full bg-[#1e1c2a] flex items-center justify-center text-gray-300 hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Instant Label -->
+            <div class="flex items-center text-[#4ade80] text-sm font-medium gap-1.5 mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#fb923c" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Instant
+            </div>
+
+            <!-- Quick Select Pills -->
+            <div class="flex gap-3 justify-center">
+                <button class="quick-btn px-4 py-1.5 rounded-full bg-[#1e1c2a] text-gray-400 text-xs sm:text-sm font-medium hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]" data-val="2">2&times;2</button>
+                <button class="quick-btn px-4 py-1.5 rounded-full bg-[#1e1c2a] text-gray-400 text-xs sm:text-sm font-medium hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]" data-val="3">3&times;3</button>
+                <button class="quick-btn px-4 py-1.5 rounded-full bg-[#1e1c2a] text-gray-400 text-xs sm:text-sm font-medium hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]" data-val="5">5&times;5</button>
+                <button class="quick-btn px-4 py-1.5 rounded-full bg-[#1e1c2a] text-gray-400 text-xs sm:text-sm font-medium hover:bg-[#282638] hover:text-white transition-colors border border-transparent hover:border-[#34314c]" data-val="10">10&times;10</button>
+            </div>
+        </div>
+
+        <!-- Continue Button -->
+        <div class="absolute bottom-6 sm:bottom-8 left-6 sm:left-8">
+            <button class="bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-semibold py-3 px-8 rounded-[12px] shadow-[0_0_15px_rgba(139,92,246,0.5)] hover:shadow-[0_0_20px_rgba(139,92,246,0.7)] transition-all">
+                Continue
+            </button>
+        </div>
+        
+    </div>
+
+</div>
+
+<script>
+    const orderValue = document.getElementById('order-value');
+    const btnMinus = document.getElementById('btn-minus');
+    const btnPlus = document.getElementById('btn-plus');
+    const quickBtns = document.querySelectorAll('.quick-btn');
+
+    const updateValue = (val) => {
+        let current = parseInt(val);
+        if(current < 2) current = 2;
+        if(current > 20) current = 20;
+        orderValue.value = current;
+    };
+
+    btnMinus.addEventListener('click', () => {
+        updateValue(parseInt(orderValue.value) - 1);
+    });
+
+    btnPlus.addEventListener('click', () => {
+        updateValue(parseInt(orderValue.value) + 1);
+    });
+
+    quickBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            updateValue(btn.getAttribute('data-val'));
+        });
+    });
+</script>
+
+</body>
+</html>

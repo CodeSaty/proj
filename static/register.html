@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Squad - The Campus Grid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- QRCode CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gta: {
+                            black: '#0f0518',
+                            dark: '#1a0a2a',
+                            border: '#3d165c',
+                            pink: '#ff00ff',
+                            cyan: '#00ffff',
+                            yellow: '#ffe600',
+                            muted: '#9a7bb3'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', 'monospace'],
+                        gta: ['"Bebas Neue"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Share Tech Mono', monospace; background-color: #0f0518; color: #e5e7eb; }
+        .glass-panel {
+            background: rgba(26, 10, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8), 2px 2px 0px #00ffff;
+        }
+        .neon-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8), -2px 2px 0px #ff00ff;
+        }
+        .neon-border {
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
+            border-color: #ff00ff;
+        }
+        .neon-border:focus {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            border-color: #00ffff;
+        }
+        input, select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #3d165c;
+            color: #00ffff;
+        }
+        input::placeholder { color: #5c437a; }
+        input:focus, select:focus {
+            outline: none;
+            color: #ff00ff;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0518; }
+        ::-webkit-scrollbar-thumb { background: #ff00ff; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00ffff; }
+        
+        /* Palm tree silhouette overlay */
+        .palm-bg {
+            background-image: 
+                radial-gradient(circle at top right, #3d165c 0%, transparent 60%),
+                linear-gradient(to bottom, #1a0a2a, #0f0518);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 palm-bg relative">
+    
+    <!-- Background Grid Effect -->
+    <div class="absolute inset-0 pointer-events-none opacity-10" style="background-image: linear-gradient(#ff00ff 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px); background-size: 50px 50px; background-position: center center;"></div>
+
+    <!-- Registration Form Container -->
+    <div id="form-container" class="glass-panel w-full max-w-4xl p-6 sm:p-10 rounded-xl relative z-10 border-t-4 border-t-gta-cyan border-b-4 border-b-gta-pink">
+        
+        <div class="text-center mb-8">
+            <h1 class="font-gta text-5xl sm:text-7xl text-gta-pink neon-glow tracking-widest mb-2 transform -skew-x-6">Initialize Squad</h1>
+            <p class="text-sm text-gta-cyan tracking-widest uppercase">Connecting to Vice Grid...</p>
+        </div>
+
+        <form id="reg-form" class="space-y-8">
+            
+            <!-- Team Name -->
+            <div>
+                <label class="block text-gta-yellow font-gta text-xl tracking-wider mb-2 drop-shadow-md">Squad Callsign (Team Name)</label>
+                <input type="text" id="team-name" required placeholder="e.g. NEON_GHOSTS" 
+                       class="w-full text-2xl sm:text-3xl py-3 px-4 rounded font-gta tracking-widest uppercase transition-all duration-300 neon-border focus:neon-border">
+            </div>
+
+            <!-- Members Section -->
+            <div>
+                <div class="flex justify-between items-end mb-4 border-b border-gta-border pb-2">
+                    <h2 class="text-2xl font-gta text-gta-cyan tracking-widest drop-shadow-md">Operatives (2-4)</h2>
+                    <span id="member-count" class="text-gta-pink font-bold tracking-widest">[ 1 / 4 ]</span>
+                </div>
+                
+                <div id="members-list" class="space-y-6">
+                    <!-- Dynamic member items go here -->
+                </div>
+
+                <div class="mt-4 text-right">
+                    <button type="button" id="btn-add" class="text-lg font-gta border border-gta-cyan text-gta-cyan px-4 py-2 hover:bg-gta-cyan hover:text-black transition-colors tracking-widest transform -skew-x-6">+ Add Operative</button>
+                </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="error-banner" class="hidden bg-red-900/40 border border-red-500 text-red-400 p-3 text-sm text-center tracking-wider"></div>
+
+            <!-- Submit -->
+            <div class="pt-6">
+                <button type="submit" id="btn-submit" class="w-full bg-gta-pink text-white font-gta text-3xl py-4 tracking-widest hover:bg-gta-cyan hover:text-black transition-all duration-300 transform -skew-x-6 shadow-[0_0_15px_#ff00ff] hover:shadow-[0_0_25px_#00ffff]">
+                    Deploy Squad to Grid
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Overlay -->
+    <div id="success-overlay" class="hidden fixed inset-0 z-50 bg-gta-black/95 flex flex-col items-center justify-center p-4">
+        <div class="glass-panel p-8 max-w-md w-full text-center rounded-xl border-t-4 border-gta-pink border-b-4 border-gta-cyan">
+            <h2 class="font-gta text-4xl text-gta-yellow tracking-widest neon-glow-cyan mb-2 transform -skew-x-6">Registration Confirmed</h2>
+            <p class="text-gray-400 text-xs mb-8 uppercase tracking-widest">Screenshot this pass. Do not lose it.</p>
+            
+            <div class="bg-white p-4 inline-block rounded mb-6 border-2 border-gta-pink shadow-[0_0_15px_#ff00ff]">
+                <div id="qrcode"></div>
+            </div>
+            
+            <p id="hash-display" class="text-[10px] text-gta-cyan break-all mb-8 font-mono"></p>
+
+            <button onclick="window.location.href='index.html'" class="w-full font-gta text-2xl bg-gta-cyan text-black py-3 hover:bg-gta-pink hover:text-white transition-colors tracking-widest transform -skew-x-6">
+                Return to Grid
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const membersList = document.getElementById('members-list');
+        const btnAdd = document.getElementById('btn-add');
+        const form = document.getElementById('reg-form');
+        const errorBanner = document.getElementById('error-banner');
+        const countDisplay = document.getElementById('member-count');
+        
+        let memberCount = 0;
+        const maxMembers = 4;
+
+
+
+        function createMemberForm() {
+            memberCount++;
+            
+            const div = document.createElement('div');
+            div.className = 'member-card bg-gta-dark/70 p-4 border border-gta-border rounded relative transition-all duration-300 hover:border-gta-cyan/50 shadow-inner shadow-gta-pink/5';
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-3 border-b border-gta-border/50 pb-2">
+                    <span class="font-gta text-gta-yellow text-xl tracking-widest drop-shadow-md">Operative 0${memberCount}</span>
+                    ${memberCount > 2 ? `<button type="button" class="font-gta text-red-500 hover:text-gta-pink text-lg tracking-widest btn-remove" onclick="removeMember(this)">[ Remove ]</button>` : ''}
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="col-span-1 sm:col-span-2 md:col-span-1">
+                        <label class="block text-gta-muted text-[10px] uppercase mb-1">Full Name</label>
+                        <input type="text" required class="m-name w-full p-2 text-sm uppercase" placeholder="Name">
+                    </div>
+                    <div>
+                        <label class="block text-gta-muted text-[10px] uppercase mb-1">Roll Number</label>
+                        <input type="text" required class="m-roll w-full p-2 text-sm uppercase" placeholder="Roll No">
+                    </div>
+
+                    <div>
+                        <label class="block text-gta-muted text-[10px] uppercase mb-1">Course</label>
+                        <input type="text" required class="m-course w-full p-2 text-sm uppercase" placeholder="e.g. B.Tech">
+                    </div>
+                    <div>
+                        <label class="block text-gta-muted text-[10px] uppercase mb-1">Branch</label>
+                        <input type="text" required class="m-branch w-full p-2 text-sm uppercase" placeholder="e.g. CSE">
+                    </div>
+                    <div>
+                        <label class="block text-gta-muted text-[10px] uppercase mb-1">Study Year</label>
+                        <input type="text" required class="m-year w-full p-2 text-sm uppercase" placeholder="e.g. 2nd">
+                    </div>
+                </div>
+            `;
+            membersList.appendChild(div);
+            updateUI();
+        }
+
+        window.removeMember = function(btn) {
+            btn.closest('.member-card').remove();
+            memberCount--;
+            updateUI();
+        }
+
+        function updateUI() {
+            countDisplay.innerText = `[ ${memberCount} / ${maxMembers} ]`;
+            if (memberCount >= maxMembers) {
+                btnAdd.classList.add('hidden');
+            } else {
+                btnAdd.classList.remove('hidden');
+            }
+        }
+
+        // Initialize with 2 members
+        createMemberForm();
+        createMemberForm();
+
+        btnAdd.addEventListener('click', () => {
+            if (memberCount < maxMembers) createMemberForm();
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorBanner.classList.add('hidden');
+            
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'TRANSMITTING...';
+
+            const teamName = document.getElementById('team-name').value.trim();
+            const memberCards = document.querySelectorAll('.member-card');
+            const members = [];
+
+            memberCards.forEach(card => {
+                members.push({
+                    name: card.querySelector('.m-name').value.trim(),
+                    roll_number: card.querySelector('.m-roll').value.trim(),
+                    course: card.querySelector('.m-course').value.trim(),
+                    branch: card.querySelector('.m-branch').value.trim(),
+                    study_year: card.querySelector('.m-year').value.trim(),
+                });
+            });
+
+            try {
+                const res = await fetch('/register_team', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ team_name: teamName, members: members })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Success!
+                    document.getElementById('form-container').classList.add('hidden');
+                    document.getElementById('success-overlay').classList.remove('hidden');
+                    
+                    document.getElementById('hash-display').innerText = data.qr_code_hash;
+                    
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: data.qr_code_hash,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff"
+                    });
+                } else {
+                    errorBanner.innerText = data.detail || 'Connection failed.';
+                    errorBanner.classList.remove('hidden');
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = 'Deploy Squad to Grid';
+                }
+            } catch (err) {
+                errorBanner.innerText = 'Network error. Server offline.';
+                errorBanner.classList.remove('hidden');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Deploy Squad to Grid';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -39,13 +39,13 @@ function initScanner() {
         console.warn("Camera error:", err);
         // Fallback: show a manual input
         document.getElementById('qr-reader').innerHTML = `
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:20px;gap:12px;">
-                <p style="color:var(--text-secondary);text-align:center;">Camera unavailable.<br>Enter QR hash manually:</p>
-                <input type="text" id="manual-hash-input" placeholder="Paste QR hash" 
-                       style="padding:14px;width:100%;font-size:1rem;border-radius:10px;border:1px solid var(--border-subtle);background:rgba(255,255,255,0.05);color:var(--text-primary);text-align:center;font-family:monospace;">
+            <div class="flex flex-col items-center justify-center w-full h-full p-4 gap-3 bg-surface-container-lowest z-50 relative pointer-events-auto">
+                <p class="text-error font-label-hud tracking-widest text-center text-[10px] animate-pulse">CAMERA OFFLINE<br>MANUAL OVERRIDE</p>
+                <input type="text" id="manual-hash-input" placeholder="ENTER HASH..." 
+                       class="w-full bg-surface-container border border-error/50 text-error font-code-terminal text-center py-2 focus:border-error focus:ring-0 outline-none">
                 <button onclick="manualLookup()" 
-                        style="padding:12px 28px;background:var(--accent-purple);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;">
-                    Look Up Team
+                        class="w-full bg-error/10 border border-error text-error font-label-hud tracking-widest py-2 hover:bg-error hover:text-surface-container-lowest transition-colors shadow-[0_0_10px_rgba(255,180,171,0.2)]">
+                    EXECUTE LOOKUP
                 </button>
             </div>
         `;
@@ -54,6 +54,11 @@ function initScanner() {
 
 function manualLookup() {
     const hash = document.getElementById('manual-hash-input').value.trim();
+    if (hash) onScanSuccess(hash);
+}
+
+function manualLookupMain() {
+    const hash = document.getElementById('manual-hash-input-main').value.trim();
     if (hash) onScanSuccess(hash);
 }
 
@@ -94,17 +99,46 @@ function populateScoringView(team, hash) {
 
     const membersContainer = document.getElementById('members-container');
     membersContainer.innerHTML = '';
+    
     team.members.forEach(m => {
-        const chip = document.createElement('span');
-        chip.className = 'member-chip';
-        chip.innerHTML = `<span class="band-dot" style="background:${sanitizeColor(m.band_color)}"></span> ${escapeHtml(m.name)}`;
-        membersContainer.appendChild(chip);
+        // is_traitor is now hidden by backend, so it will always appear as an operative
+        const role = { text: 'OPERATIVE', colorClass: 'text-primary', bgClass: 'bg-surface-container-lowest/80', borderClass: 'border-outline-variant/70', dotColor: '#e5b5ff', tagBg: 'bg-primary/10' };
+
+        const card = document.createElement('div');
+        card.className = `border ${role.borderClass} ${role.bgClass} p-2 flex flex-col justify-between`;
+        
+        card.innerHTML = `
+            <div class="flex items-center justify-between mb-1">
+                <span class="font-code-terminal text-on-surface font-semibold text-xs truncate">${escapeHtml(m.name)}</span>
+            </div>
+            <div class="mb-2">
+                <span class="text-[9px] font-label-hud ${role.colorClass} ${role.tagBg} px-1 py-0.5 border border-current tracking-wider font-bold">
+                    ${role.text}
+                </span>
+            </div>
+            <div class="mt-1 flex flex-col gap-1">
+                <span class="text-[10px] text-outline font-code-terminal">Roll: <span class="text-secondary">${escapeHtml(m.roll_number)}</span></span>
+                <span class="text-[10px] text-outline font-code-terminal">Branch: <span class="text-secondary">${escapeHtml(m.branch)}</span></span>
+                <span class="text-[10px] text-outline font-code-terminal">Course: <span class="text-secondary">${escapeHtml(m.course)} (${escapeHtml(m.study_year)})</span></span>
+            </div>
+        `;
+        membersContainer.appendChild(card);
     });
 
     // Reset inputs
     document.getElementById('max-points').value = 100;
     document.getElementById('stall-id').value = '';
     setButtonsEnabled(true);
+}
+
+// ─────────────── Adjust Points ───────────────
+function adjustPoints(delta) {
+    const input = document.getElementById('max-points');
+    let val = parseInt(input.value) || 100;
+    val += delta;
+    if (val < 10) val = 10;
+    if (val > 10000) val = 10000;
+    input.value = val;
 }
 
 // ─────────────── Submit Score ───────────────
